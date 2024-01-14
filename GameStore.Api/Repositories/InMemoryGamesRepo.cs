@@ -35,31 +35,56 @@ public class InMemoryGamesRepo : IGamesRepository
     }
 };
 
-    public IEnumerable<Game> GetAll()
+    public IEnumerable<Game> GetAllAsync()
     {
         return games;
     }
 
-    public Game? Get(int id)
+    public Game? GetAsync(int id)
     {
         return games.Find(game => game.Id == id);
     }
 
-    public void Create(Game game)
+    public void CreateAsync(Game game)
     {
         game.Id = games.Max(game => game.Id) + 1;
         games.Add(game);
     }
 
-    public void Update(Game updatedGame)
+    public void UpdateAsync(Game updatedGame)
     {
         var index = games.FindIndex(game => game.Id == updatedGame.Id);
         games[index] = updatedGame;
     }
 
-    public void Delete(int id)
+    public void DeleteAsync(int id)
     {
         var index = games.FindIndex(game => game.Id == id);
         games.RemoveAt(index);
+    }
+
+    Task IGamesRepository.CreateAsync(Game game)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task IGamesRepository.DeleteAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<Game?> IGamesRepository.GetAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<IEnumerable<Game>> IGamesRepository.GetAllAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    Task IGamesRepository.UpdateAsync(Game updatedGame)
+    {
+        throw new NotImplementedException();
     }
 }

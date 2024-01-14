@@ -15,12 +15,12 @@ public static class GamesEndpoints
         var group = routes.MapGroup("/games")
                 .WithParameterValidation();
 
-        group.MapGet("/", (IGamesRepository repo) =>
-        repo.GetAll().Select(game => game.AsDto()));
+        group.MapGet("/", async (IGamesRepository repo) =>
+        (await repo.GetAllAsync()).Select(game => game.AsDto()));
 
-        group.MapGet("/{id}", (IGamesRepository repo, int id) =>
+        group.MapGet("/{id}", async (IGamesRepository repo, int id) =>
         {
-            Game? game = repo.Get(id);
+            Game? game = await repo.GetAsync(id);
             return game is not null ? Results.Ok(game.AsDto()) : Results.NotFound();
         })
         .WithName(GetGameEndpointName);
@@ -36,15 +36,15 @@ public static class GamesEndpoints
                 ImageUri = gameDto.ImageUri
             };
 
-            repo.Create(game);
+            repo.CreateAsync(game);
 
             return Results.CreatedAtRoute(GetGameEndpointName, new { id = game.Id }, game);
         });
 
 
-        group.MapPut("/{id}", (IGamesRepository repo, int id, UpdateGameDto updatedGameDto) =>
+        group.MapPut("/{id}", async (IGamesRepository repo, int id, UpdateGameDto updatedGameDto) =>
         {
-            Game? existingGame = repo.Get(id);
+            Game? existingGame = await repo.GetAsync(id);
 
             if (existingGame is null)
             {
@@ -57,17 +57,17 @@ public static class GamesEndpoints
             existingGame.Genre = updatedGameDto.Genre;
             existingGame.ReleaseDate = updatedGameDto.ReleaseDate;
 
-            repo.Update(existingGame);
+            await repo.UpdateAsync(existingGame);
             return Results.NoContent();
         });
 
-        group.MapDelete("/{id}", (IGamesRepository repo, int id) =>
+        group.MapDelete("/{id}", async (IGamesRepository repo, int id) =>
         {
-            Game? game = repo.Get(id);
+            Game? game = await repo.GetAsync(id);
 
             if (game is not null)
             {
-                repo.Delete(id);
+                await repo.DeleteAsync(id);
             }
 
             return Results.NoContent();
