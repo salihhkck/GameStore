@@ -1,12 +1,14 @@
+using GameStore.Api.Data;
 using GameStore.Api.Endpoints;
-using GameStore.Api.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<IGamesRepository, InMemoryGamesRepo>();
+builder.Services.AddRepositories(builder.Configuration);
 
-var connectionString = builder.Configuration.GetConnectionString("GameStoreContext");
+
 var app = builder.Build();
+
+app.Services.InitializeDb();
 
 app.MapGamesEndpoints();
 
